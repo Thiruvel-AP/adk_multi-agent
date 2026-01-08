@@ -1,0 +1,14 @@
+Finalized Flow for the Agent (MVP version): 
+    Connect the socket to start the interactions. 
+        Wait 2 seconds, or the agents start the conversation like a general friend with warm gesture. 
+        Once the user starts, go with the usual flow as discussed. 
+        Get the user's voice
+        Process it 
+        If there is a normal conversation, try to talk with the user with the friend agent. 
+        If there is a task specified by the user
+            Process the input and get the actual context
+            With the context, Plan and prepare the task (sequence or parallel (decide the number of agents required for the task with the function calling)) 
+            Proceed with the task with the task doing agents (max 3 to 5) 
+            Bake the output
+            Make it as the voice back and send the output.
+        
