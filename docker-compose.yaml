@@ -6,6 +6,6 @@ services:                # 1. The top-level section
     env_file:
       - ./backend/agentic-friend-backend/config/.env # 5. Automatically load your .env variables
     volumes:             # 6. Mount your local keys into the container
-      - ./backend/agentic-friend-backend/config/robotic-subject-449510-e0-2be018664b70.json:/etc/secrets/google-key.json:ro
+      - ./backend/agentic-friend-backend/config/robotic-subject-449510-e0-98a511b5f110.json:/etc/secrets/google-key.json:ro
     environment:
       - GOOGLE_CLOUD_SERVICE_KEY=/etc/secrets/google-key.json
