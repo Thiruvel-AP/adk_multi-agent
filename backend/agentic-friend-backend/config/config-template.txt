@@ -1,0 +1,4 @@
+Create a .env file with in the config folder with these 2 keys. 
+
+GEMINI_API_KEY = "<Google API Key>"
+GOOGLE_CLOUD_SERVICE_KEY = "<JSON key path>" # paste the relative path of the json key 
