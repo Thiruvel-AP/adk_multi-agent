@@ -1,7 +1,7 @@
 # Import the required classes from the ADK
 from google.adk.agents import LlmAgent, SequentialAgent, ParallelAgent
 import copy
-from google.adk.tools import google_search
+from google.adk.tools import google_search, AgentTool
 
 # Import the Friend Agent
 from agents.friend_agent import friend_agent
@@ -13,7 +13,7 @@ research_agent = LlmAgent(
     model="gemini-2.5-flash",
     output_key="research_findings",
     description="Researcher agent that conducts thorough research on a given topic.", 
-    instruction=f"""
+    instruction="""
     You are the Research Agent responsible for gathering accurate, relevant, and up-to-date 
     information to support the user’s task. 
     Your role is to interpret the structured task provided by the Planner Agent and perform thorough 
@@ -26,7 +26,7 @@ research_agent = LlmAgent(
     concise summaries of what you discovered, focusing only on what is necessary to fulfill the user’s task. 
     Your goal is to provide high-quality raw intelligence that enables the Writer Agent to produce a strong, correct, and coherent final response.
 
-    Task: {{task}}
+    Task: {task}
     """,
     tools=[google_search],
     )

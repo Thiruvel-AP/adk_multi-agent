@@ -5,6 +5,8 @@ import microphoneService from './mic';
 import audioService from './audio';
 import animationService from './animation';
 
+import { getSessionID } from './SessionStore';
+
 function App() {
   // Connection state
   const [connectionStatus, setConnectionStatus] = useState('disconnected');
@@ -121,6 +123,9 @@ function App() {
     isInitializedRef.current = true;
 
     const initialize = async () => {
+      // Initial API call to connect the server 
+      await getSessionID();
+    
       // Request mic permission immediately on page load
       const micGranted = await initMicrophone();
       
@@ -233,7 +238,10 @@ function App() {
         {/* Reconnect Button */}
         <button 
           className="reconnect-button"
-          onClick={handleReconnect}
+          onClick={() =>{
+            getSessionID()
+            handleReconnect()
+          }}
           disabled={connectionStatus === 'connecting' || connectionStatus === 'reconnecting'}
         >
           <span className="button-icon">🔄</span>

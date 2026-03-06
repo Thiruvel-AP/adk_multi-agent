@@ -1,11 +1,22 @@
-services:                # 1. The top-level section
-  agentic-friend:              # 2. Name your service (anything you want)
-    build: .             # 3. Where is your Dockerfile? ('.' means current folder)
+services:               
+  agentic-friend:             
+    build: 
+      context: .
+      dockerfile: Dockerfile
     ports:
-      - "8000:8000"      # 4. "HostPort:ContainerPort"
+      - "8000:8000"      
     env_file:
-      - ./backend/agentic-friend-backend/config/.env # 5. Automatically load your .env variables
-    volumes:             # 6. Mount your local keys into the container
-      - ./backend/agentic-friend-backend/config/robotic-subject-449510-e0-98a511b5f110.json:/etc/secrets/google-key.json:ro
+      - ./backend/agentic-friend-backend/config/.env 
+    volumes:             
+      # Mount the Google service account key
+      - ./backend/agentic-friend-backend/config/robotic-subject-449510-e0-98a511b5f110.json:/app/secrets/google-key.json:ro
+      # Optional: Mount source code for development (remove in production)
+      # - ./backend/agentic-friend-backend:/app
+      # Memory file 
+      - ./backend/agentic-friend-backend/Memory:/app/memory_data
     environment:
-      - GOOGLE_CLOUD_SERVICE_KEY=/etc/secrets/google-key.json
+      - PYTHONUNBUFFERED=1
+      - GOOGLE_CLOUD_SERVICE_KEY=/app/secrets/google-key.json
+      - MEMORY_DIR=/app/memory_data
+    # Command is already in Dockerfile, but you can override here if needed
+    # command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
