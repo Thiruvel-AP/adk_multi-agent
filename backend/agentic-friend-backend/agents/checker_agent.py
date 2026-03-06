@@ -1,5 +1,6 @@
 # Import the required libraries
 from google.adk.agents import LlmAgent
+from google.adk.tools.agent_tool import AgentTool
 
 # Import the Friend Agent and Planner Agent
 from agents.friend_agent import friend_agent
@@ -14,8 +15,8 @@ checker_agent = LlmAgent(
     having friendly conversation or providing some task to do it. 
     Based on that, it decides a friendly conversation or a task.
     """,
-    output_key="checker_response",
-    instruction=f"""
+    output_key="user_input",
+    instruction="""
         
         You are the Checker Agent responsible for interpreting the user’s input and deciding whether it represents a 
         friendly conversational interaction or a task that requires execution by the agentic system. 
@@ -27,16 +28,16 @@ checker_agent = LlmAgent(
         Once you make this decision, you must forward the user’s original message in a structured and logically clear form to the selected agent so it can be handled correctly, without altering the user’s intent. 
         You do not answer the user yourself — you only decide how the system should respond and which agent should handle the interaction.
 
-        User input: {{user_input}}
+        User input: {user_input}
 
         The user_input is the dictionary of the previous conversation, the last conversation is the current query of the user. 
         The keys of the user_inputs to store the user conversations and agentic friends are 
             1. user : key for the user's conversation 
             2. agent : key for the agentic friend's conversations
 
-        Once you decided the user input is friendly conversation or task, forward the user input {{user_input}} to the selected agent.
+        Once you decided the user input is friendly conversation or task, forward the user input {user_input} to the selected agent.
 
-        Note: Once you decide which agent to proceed, if it's for a friend agent proceed with the entire dictionary {{user_input}}, 
+        Note: Once you decide which agent to proceed, if it's for a friend agent proceed with the entire dictionary {user_input}, 
                 else give only the last conversation of the user to the planner agent as the task.
 
         Sub-agents:
@@ -44,8 +45,10 @@ checker_agent = LlmAgent(
             - Planner Agent (for task execution)
 
         Choose the appropriate sub-agent based on the user's task, and choose one of the following options:
-            - Friend Agent : {friend_agent}
-            - Planner Agent : {planner_agent}
+            - Friend Agent : friend_agent
+            - Planner Agent : planner_agent
         """,
-    sub_agents=[friend_agent, planner_agent],
+    tools=[AgentTool(agent=friend_agent),
+           AgentTool(agent=planner_agent),
+           ],
 )   

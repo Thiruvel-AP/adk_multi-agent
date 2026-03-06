@@ -1,12 +1,8 @@
-/**
- * WebSocket Service for Voice Communication
- * Handles connection management, audio data transmission, and reconnection logic
- */
-const web_url = 'ws://localhost:8000/ws'; 
+import {retrieve_session_id} from './SessionStore'
+import {retrieve_user_id} from './SessionStore';
 
 class WebSocketService {
-  constructor(url = web_url) {
-    this.url = url;
+  constructor() {
     this.socket = null;
     this.isConnected = false;
     this.reconnectAttempts = 0;
@@ -27,13 +23,41 @@ class WebSocketService {
    */
   connect() {
     return new Promise((resolve, reject) => {
+      // 1. Get the ID first
+      const storedId = retrieve_session_id();
+      const userID = retrieve_user_id()
+
+      console.log("user_id",userID)
+      console.log("session_id", storedId)
+
+      if (!storedId || !userID) {
+      const errorMsg = `[WebSocket] Connection failed: Missing ${!storedId ? 'Session ID' : 'User ID'}`;
+      console.error(errorMsg);
+      this._emit('error', errorMsg);
+      return reject(new Error(errorMsg)); 
+      }
+
+      /**
+       * WebSocket Service for Voice Communication
+       * Handles connection management, audio data transmission, and reconnection logic
+       */
+      // Build the base URL
+      let web_url = `ws://localhost:8000/voice`;
+
+      // Add parameters dynamically
+      if (storedId && userID) {
+          web_url += `?session_id=${storedId}&user_id=${userID}`;
+      }
+
+      console.log(web_url)
+
       if (this.socket && this.socket.readyState === WebSocket.OPEN) {
         resolve(true);
         return;
       }
 
       try {
-        this.socket = new WebSocket(this.url);
+        this.socket = new WebSocket(web_url);
         this.socket.binaryType = 'arraybuffer';
 
         this.socket.onopen = () => {

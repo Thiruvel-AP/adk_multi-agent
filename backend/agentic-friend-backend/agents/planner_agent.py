@@ -1,5 +1,6 @@
 # Import the required libraries
 from google.adk.agents import LlmAgent
+from google.adk.tools import load_memory, AgentTool
 
 # Import the Sequential and Parallel Agents
 from agents.execution_agents import sequential_flow, sequential_resultant_flow
@@ -28,8 +29,8 @@ planner_agent = LlmAgent(
         You do not perform research or produce the final answer yourself — you only decide how the system should think and which agent should do the work.
 
         Sub-agents:
-        - Sequential Research Agent: {sequential_flow}
-        - Sequential Resultant Flow for the Parallel Research Agent: {sequential_resultant_flow}
+        - Sequential Research Agent: sequential_flow
+        - Sequential Resultant Flow for the Parallel Research Agent: sequential_resultant_flow
 
         Choose the appropriate sub-agent based on the user's task, and choose one of the following options:
         - Sequential Research Agent
@@ -38,7 +39,8 @@ planner_agent = LlmAgent(
         Note: The 'user_input' you received is the 'task' that needs planning.
         Select the flow and pass this text as the 'task' argument.
         
-        User Task to Analyze: "{user_input}"
+        User Task to Analyze: {user_input}
     """,
-    sub_agents=[sequential_flow, sequential_resultant_flow],
+    tools=[AgentTool(agent=sequential_flow),
+                AgentTool(agent=sequential_resultant_flow)],
 )

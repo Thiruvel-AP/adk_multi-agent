@@ -1,3 +1,4 @@
-# files to ignore 
-.env 
+# files to ignore
+AgenticFriendVENV/
+.env
 robotic-subject-449510-e0-98a511b5f110.json

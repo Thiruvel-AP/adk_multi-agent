@@ -1,0 +1,12 @@
+{
+    "agentic_friend:4d22b9c8-d638-47e9-a52e-569b18f0e3c2:0742c449-4bec-4767-94d9-8da9d5c929c9": {
+        "id": "0742c449-4bec-4767-94d9-8da9d5c929c9",
+        "app_name": "agentic_friend",
+        "user_id": "4d22b9c8-d638-47e9-a52e-569b18f0e3c2",
+        "state": {
+            "user_input": ""
+        },
+        "events": [],
+        "last_update_time": 0.0
+    }
+}
