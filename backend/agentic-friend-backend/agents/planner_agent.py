@@ -1,14 +1,14 @@
 # Import the required libraries
 from google.adk.agents import LlmAgent
-from google.adk.tools import load_memory, AgentTool
+from google.adk.tools import AgentTool
 
 # Import the Sequential and Parallel Agents
 from agents.execution_agents import sequential_flow, sequential_resultant_flow
 
 # Define the Planner Agent to plan and organize tasks.
 planner_agent = LlmAgent(
-    name="PlannerAgent",
-    model="gemini-2.5-flash",
+    name="planner_agent",
+    model="gemini-2.5-flash-lite",
     description="The Planner Agent is responsible for planning and organizing tasks.",
     instruction= """
         You are the Planner Agent responsible for validating the user’s task and 

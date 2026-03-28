@@ -14,7 +14,7 @@ load_dotenv()
 
 api_key = os.getenv("GOOGLE_API_KEY")
 
-print(api_key)
+# print(api_key)
 
 # Create the root agent
 agentic_app = App(

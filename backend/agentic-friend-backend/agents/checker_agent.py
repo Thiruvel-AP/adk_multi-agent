@@ -8,8 +8,8 @@ from agents.planner_agent import planner_agent
 
 # Define the Checker Agent to check the output of the Planner Agent.
 checker_agent = LlmAgent(
-    name="CheckerAgent",
-    model="gemini-2.5-flash",
+    name="checker_agent",
+    model="gemini-2.5-flash-lite",
     description="""
     This is the checker agents which makes the decision whether the user 
     having friendly conversation or providing some task to do it. 
@@ -48,6 +48,7 @@ checker_agent = LlmAgent(
             - Friend Agent : friend_agent
             - Planner Agent : planner_agent
         """,
+    # Agentic Orchestration !!!
     tools=[AgentTool(agent=friend_agent),
            AgentTool(agent=planner_agent),
            ],
