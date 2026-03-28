@@ -6,41 +6,39 @@
   for different conversation and task types.
 
   ## 🏗️ Architecture
-
-  ### Directory Structure
+    
+  ```text
   adk_multi-agent/
-  ├── README.md                    # This file
+  ├── README.md                    # Project documentation
   ├── requirements.txt             # Python dependencies
   ├── docker-compose.yaml          # Container orchestration
+  ├── Dockerfile                   # Container build instructions
   ├── backend/                     # Backend microservices
   │   └── agentic-friend-backend/
-  │       ├── main.py             # Flask API entry point
-  │       ├── agents/             # Agent definitions
-  │       │   ├── checker_agent.py      # Intent verification
-  │       │   ├── execution_agents.py   # Task execution
-  │       │   ├── friend_agent.py       # Core conversation agent
-  │       │   ├── planner_agent.py      # Task planning
-  │       │   └── root_agent.py        # Entry point agent
-  │       ├── memory/             # Memory management
-  │       │   ├── Memory.json
-  │       │   └── session_memory.py
-  │       ├── voice_synthesis/   # AI voice generation
-  │       │   └── hf_voice_synthesis/
-  │       └── config/            # Configuration files
-  ├── frontend/                   # React frontend
-  │   └── agentic-friend-frontend/
-  │       ├── src/
-  │       │   ├── App.js
-  │       │   ├── audio.js       # Audio processing
-  │       │   ├── websocket.js   # WebSocket communication
-  │       │   ├── index.js
-  │       │   ├── ApiExampleComponent.js
-  │       │   ├── Loader.js
-  │       │   └── sessionService.js
-  │       └── package.json
-  ├── Dockerfile                 # Container build instructions
-  └── config/
-
+  │       ├── main.py              # Flask API entry point
+  │       ├── agents/              # Hierarchical Agent definitions
+  │       │   ├── checker_agent.py # Intent verification & validation
+  │       │   ├── execution_agents.py # Task execution & tool use
+  │       │   ├── friend_agent.py  # Core conversation & persona logic
+  │       │   ├── planner_agent.py # Task decomposition & planning
+  │       │   └── root_agent.py    # Primary ingress & routing
+  │       ├── memory/              # Context & State management
+  │       │   ├── Memory.json      # Persistent storage layer
+  │       │   └── session_memory.py # Session-specific volatile memory
+  │       ├── voice_synthesis/     # Multi-modal AI generation
+  │       │   └── hf_voice_synthesis/ # HuggingFace VITS/Whisper integration
+  │       └── config/              # Environment & Global configurations
+  └── frontend/                    # React.js SPA
+      └── agentic-friend-frontend/
+          ├── src/
+          │   ├── App.js           # Main application logic
+          │   ├── audio.js         # Audio Worklet & processing logic
+          │   ├── websocket.js     # Real-time bidirectional communication
+          │   ├── sessionService.js # Stateful session management
+          │   └── Loader.js        # Global UI loading states
+          └── package.json         # Node.js dependencies
+  ```
+          
   ## 🎯 Core Components
 
   ### Backend Agents
