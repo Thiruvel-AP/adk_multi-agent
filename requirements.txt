@@ -1,11 +1,21 @@
+# ── Web server ────────────────────────────────────────────────
 fastapi>=0.115.0
 uvicorn>=0.30.0
+websockets>=11.0
 python-dotenv>=1.0.0
+
+# ── Google ADK ────────────────────────────────────────────────
 google-adk>=1.24.0
 google-generativeai>=0.8.0
-google-cloud-speech>=2.20.0
-google-cloud-texttospeech>=2.14.0
+
+# ── Numerics ──────────────────────────────────────────────────
 numpy>=1.24.0
-av>=10.0.0
-soundfile>=0.12.0
-websockets>=11.0
+
+# ── STT — faster-whisper ──────────────────────────────────────
+faster-whisper>=1.1.0
+# ctranslate2>=4.5.0 pulled automatically — needs CUDA 12.3+ + cuDNN v9
+
+# ── TTS — facebook/mms-tts-eng ────────────────────────────────
+transformers>=4.41.0
+sentencepiece>=0.2.0
+accelerate>=0.30.0

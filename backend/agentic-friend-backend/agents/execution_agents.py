@@ -9,8 +9,8 @@ from agents.friend_agent import friend_agent
 # Define the leaf-level worker agents that perform actual work
 # Researcher Agent
 research_agent = LlmAgent(
-    name="Researcher", 
-    model="gemini-2.5-flash",
+    name="research_agent", 
+    model="gemini-2.5-flash-lite",
     output_key="research_findings",
     description="Researcher agent that conducts thorough research on a given topic.", 
     instruction="""
@@ -32,8 +32,8 @@ research_agent = LlmAgent(
     )
 # Writer Agent
 writer_agent = LlmAgent(
-    name="Writer", 
-    model="gemini-2.5-flash",
+    name="writer_agent", 
+    model="gemini-2.5-flash-lite",
     description="Writer agent that writes a report based on the research.", 
     instruction="""
     You are the Writer Agent responsible for producing the final response to the user using the 
@@ -50,12 +50,12 @@ writer_agent = LlmAgent(
 
 # A Sequential Flow: Researcher -> Writer
 sequential_flow = SequentialAgent(
-    name="SequentialResearchAgent",
+    name="sequential_flow",
     description="This is the Sequential Research Agent that will be used to perform tasks sequentially.",
 )
 
 # Sub agents
-sub_agents = [research_agent, writer_agent, friend_agent]
+sequential_flow.sub_agents = [research_agent, writer_agent, friend_agent]
 
 # Create 5 separate research agents
 research_agent_1 = copy.deepcopy(research_agent)
@@ -80,7 +80,7 @@ research_agent_5.output_key = "research_findings_5"
 
 # A Parallel Flow: Multiple agents working at once
 parallel_flow = ParallelAgent(
-    name="ParallelResearchAgent",
+    name="parallel_flow",
     description="This is the Parallel Research Agent that will be used to perform tasks parallelly.",
 )
 

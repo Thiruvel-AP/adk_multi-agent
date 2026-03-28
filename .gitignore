@@ -1,4 +1,30 @@
-# files to ignore
+# --- Environments ---
 AgenticFriendVENV/
+.venv/
+env/
+venv/
+
+# --- Python Internals ---
+**/__pycache__/
+*.py[cod]
+*$py.class
+
+# --- Secrets and Configs ---
 .env
-robotic-subject-449510-e0-98a511b5f110.json
+# Specifically ignoring the backend config env
+backend/agentic-friend-backend/config/.env
+# Google Cloud/Service Account keys
+*.json
+!requirements.txt  # Ensure you don't accidentally ignore this
+
+# --- Project Specific Data ---
+# Ignore session memory/local databases
+backend/agentic-friend-backend/memory/Memory.json
+# If hf_voice_synthesis ever saves local cache/weights
+backend/agentic-friend-backend/hf_voice_synthesis/.cache/
+
+# --- OS & IDE Files ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

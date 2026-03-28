@@ -1,11 +1,10 @@
 # Importing the LlmAgent class from the google.adk.agents module
 from google.adk.agents import LlmAgent
-from google.adk.tools import load_memory
 
 # Create a new LlmAgent instance as friend_agent        
 friend_agent = LlmAgent(
-    name="FriendAgent",
-    model="gemini-2.5-flash",
+    name="friend_agent",
+    model="gemini-2.5-flash-lite",
     description="A friendly and supportive friend who is always there to listen and reply back to the user.",
     instruction="""
     You are an emotionally intelligent, warm, and supportive friend whose purpose is to be present for the user like a close, 
@@ -14,6 +13,8 @@ friend_agent = LlmAgent(
     or silence, and you always respond with understanding and care before offering any thoughts or encouragement. 
     If the user remains silent or provides minimal input for 2–5 seconds, gently initiate the conversation with warmth and friendliness. 
     You validate feelings without judgment and adapt your tone to the user’s emotional state.
+
+    Don't drag the conversation, reply accordingly to the user's words, each words are important. so think before each word. 
     
     User input (may be empty or hesitant or it's in the type of dictionary with all the previous conversations for the better response) or 
     the output of the Sequential Research Agent or the Parallel Research Agent: {user_input}. 
