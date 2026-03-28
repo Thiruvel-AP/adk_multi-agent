@@ -1,4 +1,4 @@
-# AgenticFriend - Multi-Agent Autonomous Development Kit
+# AgenticFriend 
 
   ## 📚 Overview
 
