@@ -10,19 +10,20 @@ class WebSocketService {
     this.reconnectDelay       = 1000;
     this.listeners = {
       open:         [],
-      close:        [],
+      close:[],
       message:      [],
       error:        [],
       statusChange: [],
-      speechEnd:    [],
+      speechEnd:[],
       speechStart:  [],   // user started speaking → UI shows mic wave
-      agentStart:   [],   // agent started speaking → UI shows agent wave
-      agentStop:    [],   // agent stopped speaking → UI stops agent wave
+      agentStart:[],   // agent started speaking → UI shows agent wave
+      agentStop:[],   // agent stopped speaking → UI stops agent wave
     };
 
     this._audioContext = null;
     this._workletNode  = null;
     this._micSource    = null;
+    this._stream       = null; // ✅ Fix: Store stream reliably for stopping
     this._isCapturing  = false;
   }
 
@@ -42,7 +43,9 @@ class WebSocketService {
         return reject(new Error(msg));
       }
 
-      const url = `ws://localhost:8000/voice?session_id=${storedId}&user_id=${userID}`;
+      // ✅ Fix: Use env variable fallback so it doesn't break in production
+      const wsBase = process.env.REACT_APP_WS_URL || 'ws://localhost:8000';
+      const url = `${wsBase}/voice?session_id=${storedId}&user_id=${userID}`;
 
       if (this.socket &&
          (this.socket.readyState === WebSocket.OPEN ||
@@ -73,7 +76,6 @@ class WebSocketService {
         };
 
         this.socket.onmessage = (e) => {
-          // ✅ Agent audio arriving — emit agentStart for wave animation
           if (e.data instanceof ArrayBuffer) {
             this._emit('agentStart');
             audioService.playAudioChunk(e.data).then(() => {
@@ -122,23 +124,6 @@ class WebSocketService {
     }
   }
 
-  async autoReconnect() {
-    while (this.reconnectAttempts < this.maxReconnectAttempts) {
-      this.reconnectAttempts++;
-      const delay = this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1);
-      console.log(`[WebSocket] Retry in ${delay}ms (attempt ${this.reconnectAttempts})`);
-      this._emit('statusChange', 'reconnecting');
-      await new Promise(r => setTimeout(r, delay));
-      try {
-        await this.connect();
-        return true;
-      } catch { /* try again */ }
-    }
-    console.error('[WebSocket] Max reconnection attempts reached');
-    this._emit('statusChange', 'failed');
-    return false;
-  }
-
   sendAudioChunk(audioData) {
     if (!this.isConnected || !this.socket) return false;
     try {
@@ -171,21 +156,10 @@ class WebSocketService {
   }
 
   _emit(event, data) {
-    (this.listeners[event] || []).forEach(cb => {
+    (this.listeners[event] ||[]).forEach(cb => {
       try { cb(data); }
       catch (e) { console.error(`[WebSocket] Listener error (${event}):`, e); }
     });
-  }
-
-  getStatus() {
-    if (!this.socket) return 'disconnected';
-    switch (this.socket.readyState) {
-      case WebSocket.CONNECTING: return 'connecting';
-      case WebSocket.OPEN:       return 'connected';
-      case WebSocket.CLOSING:    return 'closing';
-      case WebSocket.CLOSED:     return 'disconnected';
-      default:                   return 'unknown';
-    }
   }
 
   // ═══════════════════════════════════════════════════════════
@@ -203,7 +177,8 @@ class WebSocketService {
     }
 
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
+      // ✅ Fix: Save stream to a class variable
+      this._stream = await navigator.mediaDevices.getUserMedia({
         audio: {
           channelCount:     1,
           sampleRate:       16000,
@@ -214,7 +189,7 @@ class WebSocketService {
       });
 
       this._audioContext = new AudioContext({ sampleRate: 16000 });
-      this._micSource    = this._audioContext.createMediaStreamSource(stream);
+      this._micSource    = this._audioContext.createMediaStreamSource(this._stream);
 
       const highPass            = this._audioContext.createBiquadFilter();
       highPass.type             = 'highpass';
@@ -227,20 +202,21 @@ class WebSocketService {
       compressor.attack.value    = 0.003;
       compressor.release.value   = 0.25;
 
-      await this._audioContext.audioWorklet.addModule('/audio-processor.worklet.js');
+      // ✅ Fix: Use PUBLIC_URL to ensure React can find the file in the public folder
+      const workletUrl = (process.env.PUBLIC_URL || '') + '/audio-processor.worklet.js';
+      await this._audioContext.audioWorklet.addModule(workletUrl);
+      
       this._workletNode = new AudioWorkletNode(this._audioContext, 'pcm-processor');
 
-      // Worklet message handler lives here — after worklet is created
       this._workletNode.port.onmessage = (e) => {
         if (e.data.type === 'audio') {
           this.sendAudioChunk(e.data.buffer);
 
         } else if (e.data.type === 'speech_start') {
-          // User started speaking — stop agent audio immediately (barge-in)
+          // Barge-in logic executes flawlessly here!
           audioService.stop();
           this._emit('agentStop');
           this._emit('speechStart');
-          // Tell backend to flush TTS queue
           this.sendMessage({ type: 'barge_in' });
 
         } else if (e.data.type === 'speech_end') {
@@ -249,10 +225,17 @@ class WebSocketService {
         }
       };
 
+      // Connect standard chain
       this._micSource
         .connect(highPass)
         .connect(compressor)
         .connect(this._workletNode);
+
+      // ✅ Fix: Prevent Safari/Firefox from suspending the Worklet node
+      const dummyGain = this._audioContext.createGain();
+      dummyGain.gain.value = 0; // Muted
+      this._workletNode.connect(dummyGain);
+      dummyGain.connect(this._audioContext.destination);
 
       this._isCapturing = true;
       console.log('[Audio] Capture started at', this._audioContext.sampleRate, 'Hz');
@@ -268,7 +251,12 @@ class WebSocketService {
 
     this._workletNode?.disconnect();
     this._micSource?.disconnect();
-    this._micSource?.mediaStream?.getTracks().forEach(t => t.stop());
+    
+    // ✅ Fix: Reliable way to stop the hardware microphone
+    if (this._stream) {
+      this._stream.getTracks().forEach(t => t.stop());
+      this._stream = null;
+    }
 
     if (this._audioContext) {
       await this._audioContext.close();
