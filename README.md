@@ -164,7 +164,7 @@
 
   Voice Synthesis
 
-  - Model: HuggingFace vits small (multi-lingual)
+  - Model: Facebooks's mms-tts-eng (only English)
   - Features:
     - Real-time voice generation
     - Voice cloning capability
