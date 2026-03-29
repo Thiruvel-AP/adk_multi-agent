@@ -60,6 +60,11 @@ class PCMProcessor extends AudioWorkletProcessor {
     if (!silent) {
       // Voice detected — reset silence counter and start speaking
       this._silentChunks = 0;
+
+      if (!this._speaking) {
+        this.port.postMessage({ type: "speech_start" });
+      }
+
       this._speaking     = true;
       this._send(this._buffer);
 
